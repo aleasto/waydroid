@@ -124,7 +124,7 @@ def init(args):
 
         if "running_init_in_service" not in args or not args.running_init_in_service:
             try:
-                dbus.SystemBus().get_object("id.waydro.ContainerService", "/Initializer").Done(dbus_interface="id.waydro.Initializer")
+                tools.helpers.ipc.DBusContainerService("/Initializer", "id.waydro.Initializer").Done()
             except dbus.DBusException:
                 pass
     else:
@@ -133,10 +133,12 @@ def init(args):
 def wait_for_init(args):
     helpers.ipc.create_channel("remote_init_output")
 
-    name = dbus.service.BusName("id.waydro.ContainerService", dbus.SystemBus())
     mainloop = GLib.MainLoop()
     dbus_obj = DbusInitializer(mainloop, dbus.SystemBus(), '/Initializer', args)
     mainloop.run()
+
+    # After init
+    dbus_obj.remove_from_connection()
 
 class DbusInitializer(dbus.service.Object):
     def __init__(self, looper, bus, object_path, args):
@@ -225,7 +227,7 @@ def remote_init_client(args):
 
     if is_initialized(args):
         try:
-            bus.get_object("id.waydro.ContainerService", "/Initializer").Done(dbus_interface="id.waydro.Initializer")
+            tools.helpers.ipc.DBusContainerService("/Initializer", "id.waydro.Initializer").Done()
         except dbus.DBusException:
             pass
         return
@@ -233,7 +235,7 @@ def remote_init_client(args):
     def notify_and_quit(caller):
         if is_initialized(args):
             try:
-                bus.get_object("id.waydro.ContainerService", "/Initializer").Done(dbus_interface="id.waydro.Initializer")
+                tools.helpers.ipc.DBusContainerService("/Initializer", "id.waydro.Initializer").Done()
             except dbus.DBusException:
                 pass
         GLib.idle_add(Gtk.main_quit)
@@ -334,7 +336,7 @@ def remote_init_client(args):
                     "vendor_channel": self.vndOta.get_text(),
                     "system_type": self.sysType.get_active_text()
                 }
-                bus.get_object("id.waydro.ContainerService", "/Initializer").Init(params, dbus_interface="id.waydro.Initializer")
+                tools.helpers.ipc.DBusContainerService("/Initializer", "id.waydro.Initializer").Init(params)
             except:
                 draw("The waydroid container service is not listening\n")
                 GLib.idle_add(self.downloadBtn.set_sensitive, True)
