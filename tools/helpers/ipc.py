@@ -42,3 +42,6 @@ def DBusContainerService(object_path="/ContainerManager", intf="id.waydro.Contai
 
 def DBusSessionService(object_path="/SessionManager", intf="id.waydro.SessionManager"):
     return dbus.Interface(dbus.SessionBus().get_object("id.waydro.Session", object_path), intf)
+
+def DBusAppService(package_name, object_path="/Monitor", intf="id.waydro.AppMonitor"):
+    return dbus.Interface(dbus.SessionBus().get_object("id.waydro.App." + package_name, object_path), intf)

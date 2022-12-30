@@ -76,11 +76,13 @@ def start(args, unlocked_cb=None):
 
     services.user_manager.start(args, session, unlocked_cb)
     services.clipboard_manager.start(args)
+    services.app_monitor.start(args)
     service(args, mainloop)
 
 def do_stop(args, looper):
     services.user_manager.stop(args)
     services.clipboard_manager.stop(args)
+    services.app_monitor.stop(args)
     looper.quit()
 
 def stop(args):

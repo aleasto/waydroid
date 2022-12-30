@@ -176,3 +176,5 @@ def loadBinderNodes(args):
     # These might not be in cfg on package upgrade
     args.BINDER_PROTOCOL = cfg["waydroid"].get("binder_protocol")
     args.SERVICE_MANAGER_PROTOCOL = cfg["waydroid"].get("service_manager_protocol")
+    args.VNDBINDER_PROTOCOL = cfg["waydroid"].get("vnd_binder_protocol")
+    args.VNDSERVICE_MANAGER_PROTOCOL = cfg["waydroid"].get("vnd_service_manager_protocol")
