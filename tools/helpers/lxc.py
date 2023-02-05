@@ -283,6 +283,8 @@ def make_base_props(args):
     vulkan = find_hal("vulkan")
     if not vulkan and dri:
         vulkan = tools.helpers.gpu.getVulkanDriver(args, os.path.basename(dri))
+    if not vulkan:
+        vulkan = "pastel"
     if vulkan:
         props.append("ro.hardware.vulkan=" + vulkan)
 
