@@ -108,7 +108,7 @@ def make_prop(args, cfg, full_props_path):
     if not os.path.isfile(args.work + "/waydroid_base.prop"):
         raise RuntimeError("waydroid_base.prop Not found")
     with open(args.work + "/waydroid_base.prop") as f:
-        props = f.read().splitlines()
+        props = {k: v for k, v in (kv.split("=") for kv in  f.read().splitlines())}
     if not props:
         raise RuntimeError("waydroid_base.prop is broken!!?")
 
@@ -116,7 +116,7 @@ def make_prop(args, cfg, full_props_path):
         value = cfg[cfg_key]
         if value != "None":
             value = value.replace("/mnt/", "/mnt_extra/")
-            props.append(key + "=" + value)
+            props[key] = value
 
     add_prop("waydroid.host.user", "user_name")
     add_prop("waydroid.host.uid", "user_id")
@@ -127,14 +127,23 @@ def make_prop(args, cfg, full_props_path):
     add_prop("waydroid.wayland_display", "wayland_display")
     add_prop("waydroid.background_start", "background_start")
     if which("waydroid-sensord") is None:
-        props.append("waydroid.stub_sensors_hal=1")
+        props["waydroid.stub_sensors_hal"] = "1"
     dpi = cfg["lcd_density"]
     if dpi != "0":
-        props.append("ro.sf.lcd_density=" + dpi)
+        props["ro.sf.lcd_density"] = dpi
+
+    android_api = int(helpers.props.file_get(args,
+                tools.config.defaults["rootfs"] + "/system/build.prop",
+                "ro.build.version.sdk"))
+
+    if android_api >= 33:
+        if props["ro.hardware.egl"] == "swiftshader":
+            props["ro.hardware.egl"] = "angle"
+            props.setdefault("ro.hardware.vulkan", "pastel")
 
     final_props = open(full_props_path, "w")
-    for prop in props:
-        final_props.write(prop + "\n")
+    for key, value in props.items():
+        final_props.write(key + "=" + value + "\n")
     final_props.close()
     os.chmod(full_props_path, 0o644)
 
