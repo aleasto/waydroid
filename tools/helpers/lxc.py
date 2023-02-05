@@ -308,9 +308,6 @@ def make_base_props(args):
 
     props.append("waydroid.tools_version=" + tools.config.version)
 
-    if args.vendor_type == "MAINLINE":
-        props.append("ro.vndk.lite=true")
-
     for product in ["brand", "device", "manufacturer", "model", "name"]:
         prop_product = tools.helpers.props.host_get(
             args, "ro.product.vendor." + product)

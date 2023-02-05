@@ -141,6 +141,12 @@ def make_prop(args, cfg, full_props_path):
             props["ro.hardware.egl"] = "angle"
             props.setdefault("ro.hardware.vulkan", "pastel")
 
+    if tools.config.load(args)["waydroid"]["vendor_type"] == "MAINLINE":
+        if android_api <= 30:
+            props["ro.vndk.lite"] = "true"
+        else:
+            props.pop("ro.vndk.lite", None)
+
     final_props = open(full_props_path, "w")
     for key, value in props.items():
         final_props.write(key + "=" + value + "\n")
